@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1, user-scalable=no, width=device-width" />
+    <title>Tone Test</title>
+    <link rel="stylesheet" href="./main.css" />
+    <script defer src="./main.js"></script>
+  </head>
+  <body>
+    <div class="page" id="ChannelSelect">
+      <label>Select Channel:</label>
+    </div>
+    <div class="page" id="Player">
+      <section>
+        <a id="Connection">
+          <label>Connected to</label>
+          <span id="ChannelName"></span>
+        </a>
+      </section>
+      <section id="Media">
+        <label>Playing</label>
+        <span id="MediaTitle"></span>
+        <div>
+          <button id="PlayPause">Play/Pause</button>
+        </div>
+      </section>
+      <section>
+        <button disabled id="PlayFile">Play File</button>
+        <button id="PlayUrl">Play URL</button>
+      </section>
+    </div>
+  </body>
+</html>

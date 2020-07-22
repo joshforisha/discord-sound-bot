@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@500&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Colors */
+  --black: #3b393c;
+  --cyan-dark: #5ac3d9;
+  --cyan-light: #90cfd4;
+  --gray-dark: #69696c;
+  --gray-light: #ece9e0;
+  --green-dark: #73854a;
+  --green-light: #b9cb65;
+  --orange-dark: #d05226;
+  --orange-light: #f57840;
+  --pink-dark: #d25383;
+  --pink-light: #e59ab6;
+  --purple-dark: #9183b2;
+  --purple-light: #a9a3cf;
+  --red-dark: #951f1f;
+  --red-light: #c1424f;
+  --turquoise-dark: #036273;
+  --turquoise-light: #438889;
+  --white: #fcfbf6;
+  --yellow-dark: #f9b81a;
+  --yellow-light: #ffcd03;
+
+  /* Sizes */
+  --huge: 32px;
+  --large: 24px;
+  --medium: 16px;
+  --small: 8px;
+  --tiny: 4px;
+}
+
+a {
+  color: var(--white);
+  cursor: pointer;
+  transition: color 100ms ease-out;
+}
+
+a:hover {
+  color: var(--red-light);
+  text-decoration: line-through;
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 32px;
+  margin: 0px;
+}
+
+button {
+  background-color: var(--white);
+  border-color: var(--white);
+  border-style: solid;
+  border-width: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  outline: none;
+  padding: var(--small) var(--medium);
+  text-transform: uppercase;
+  vertical-align: top;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:disabled > * {
+  opacity: 0.5;
+}
+
+button.-secondary {
+  background-color: transparent;
+  color: var(--white);
+}
+
+button.-text {
+  background-color: transparent;
+  border-width: 0px;
+  color: var(--green-light);
+  font-size: 16px;
+  padding: var(--small) 0px;
+  text-transform: none;
+}
+
+label {
+  font-family: "Baloo 2", cursive;
+  font-weight: 500;
+}
+
+p {
+  margin: 0px;
+}
+
+p:first-child {
+  margin-top: var(--medium);
+}
+
+p:last-child {
+  margin-bottom: var(--medium);
+}
+
+.page {
+  display: none;
+}

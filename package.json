@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "scripts": {
+    "lint": "eslint client/**/*.js server/**/*.js",
+    "serve-client": "parcel serve client/index.html",
+    "serve-server": "nodemon server/main.js",
+    "start": "concurrently \"npm:serve-*\"",
+    "test": "npm run lint"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "nodemon": "^2.0.4",
+    "parcel-bundler": "^1.12.4",
+    "prettier": "^2.0.5"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "bufferutil": "^4.0.1",
+    "concurrently": "^5.2.0",
+    "discord.js": "^12.2.0",
+    "ws": "^7.3.1",
+    "ytdl-core": "^3.1.2"
+  }
+}
