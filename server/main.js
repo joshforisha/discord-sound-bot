@@ -55,7 +55,11 @@ wss.on("connection", (ws) => {
       disconnect = noop;
     };
 
-    state.connectedChannel = `${voiceChannel.guild.name} – ${voiceChannel.name}`;
+    state.connectedChannel = {
+      iconUrl: voiceChannel.guild.iconURL(),
+      id: voiceChannel.id,
+      name: `${voiceChannel.guild.name} – ${voiceChannel.name}`,
+    };
     send(state);
   }
 

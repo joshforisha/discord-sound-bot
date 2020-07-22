@@ -10,19 +10,13 @@
   <body>
     <div class="page -hidden" id="ChannelSelect"></div>
     <div class="page -hidden" id="Player">
-      <section>
-        <a id="Connection">
-          <label>Connected to</label>
-          <span id="ChannelName"></span>
-        </a>
-      </section>
-      <section id="Media">
-        <label>Playing</label>
-        <span id="MediaTitle"></span>
-        <div>
-          <button id="PlayPause">Play/Pause</button>
-        </div>
-      </section>
+      <button id="ConnectedChannel">
+        <img class="icon" />
+        <span class="name"></span>
+      </button>
+      <button id="Media">
+        <span class="title"></span>
+      </button>
       <section>
         <button disabled id="PlayFile">Play File</button>
         <button id="PlayUrl">Play URL</button>

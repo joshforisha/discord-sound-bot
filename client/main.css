@@ -6,23 +6,22 @@
 
 :root {
   /* Nord colors */
-  --black: #22262f;
-  --red: #bf616a;
-  --orange: #d08770;
-  --yellow: #ebcb8b;
-  --green: #a3be8c;
-  --purple: #b48ead;
+  --black: #2e3440;
   --blue-dark: #5e81ac;
   --blue-light: #81a1c1;
-  --mint: #8fbcbb;
   --cyan: #88c0d0;
-  --gray-darkest: #2e3440;
-  --gray-darker: #3b4252;
   --gray-dark: #434c5e;
-  --gray: #4c566a;
+  --gray-darker: #3b4252;
   --gray-light: #d8dee9;
   --gray-lighter: #e5e9f0;
+  --gray: #4c566a;
+  --green: #a3be8c;
+  --mint: #8fbcbb;
+  --orange: #d08770;
+  --purple: #b48ead;
+  --red: #bf616a;
   --white: #eceff4;
+  --yellow: #ebcb8b;
 
   /* Sizes */
   --huge: 32px;
@@ -54,8 +53,9 @@ body {
 
 button {
   align-items: center;
-  background-color: var(--gray-dark);
-  border: none;
+  background-color: var(--gray-darker);
+  border-width: 0px;
+  border-radius: var(--small);
   color: var(--white);
   cursor: pointer;
   display: flex;
@@ -64,7 +64,7 @@ button {
   justify-content: center;
   margin-top: var(--medium);
   outline: none;
-  padding: var(--medium);
+  padding: var(--small);
   text-transform: uppercase;
   transition: background-color 100ms ease-out;
   vertical-align: top;
@@ -80,10 +80,11 @@ button:disabled > * {
 }
 
 button:hover:not(:disabled) {
-  background-color: var(--gray);
+  background-color: var(--gray-dark);
 }
 
 button > img {
+  border-radius: var(--small);
   margin-right: var(--large);
   max-height: 40px;
 }
@@ -120,5 +121,5 @@ p:last-child {
 #Player {
   display: flex;
   flex-direction: column;
-  margin: var(--medium);
+  margin: 0px var(--medium);
 }

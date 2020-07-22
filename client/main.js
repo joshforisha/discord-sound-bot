@@ -5,14 +5,14 @@ const Page = {
   Player: "PLAYER",
 };
 
-const channelNameEl = document.getElementById("ChannelName");
-const channelSelectEl = document.getElementById("ChannelSelect");
-const connectionEl = document.getElementById("Connection");
-const mediaEl = document.getElementById("Media");
-const mediaTitleEl = document.getElementById("MediaTitle");
-const playerEl = document.getElementById("Player");
-const playPauseEl = document.getElementById("PlayPause");
-const playUrlEl = document.getElementById("PlayUrl");
+const channelSelectDiv = document.getElementById("ChannelSelect");
+const playerDiv = document.getElementById("Player");
+const connectedChannelButton = document.getElementById("ConnectedChannel");
+const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
+const connectedChannelName = connectedChannelButton.querySelector(".name");
+const mediaButton = document.getElementById("Media");
+const mediaTitle = mediaButton.querySelector(".title");
+const playUrlButton = document.getElementById("PlayUrl");
 
 let connectDelay = 2000;
 let page = null;
@@ -28,9 +28,9 @@ function connect(fail) {
   };
 
   function viewChannelSelect(state) {
-    Array.from(channelSelectEl.children)
+    Array.from(channelSelectDiv.children)
       .filter((e) => e instanceof HTMLButtonElement)
-      .forEach((e) => channelSelectEl.removeChild(e));
+      .forEach((e) => channelSelectDiv.removeChild(e));
 
     state.channels.forEach((channel) => {
       const button = document.createElement("button");
@@ -44,34 +44,34 @@ function connect(fail) {
       button.appendChild(name);
 
       button.addEventListener("click", () => {
-        hide(channelSelectEl);
+        hide(channelSelectDiv);
         page = null;
         send(connectToChannel(channel.id));
       });
-      channelSelectEl.appendChild(button);
+      channelSelectDiv.appendChild(button);
     });
 
     if (page !== Page.ChannelSelect) {
-      hide(playerEl);
-      show(channelSelectEl);
+      hide(playerDiv);
+      show(channelSelectDiv);
       page = Page.ChannelSelect;
     }
   }
 
   function viewPlayer(state) {
-    channelNameEl.textContent = state.connectedChannel;
+    connectedChannelIcon.setAttribute("src", state.connectedChannel.iconUrl);
+    connectedChannelName.textContent = state.connectedChannel.name;
 
     if (state.mediaTitle) {
-      playPauseEl.textContent = state.playing ? "Pause" : "Play";
-      mediaTitleEl.textContent = state.mediaTitle;
-      show(mediaEl);
+      mediaTitle.textContent = state.mediaTitle;
+      show(mediaButton);
     } else {
-      hide(mediaEl);
+      hide(mediaButton);
     }
 
     if (page !== Page.Player) {
-      hide(channelSelectEl);
-      show(playerEl);
+      hide(channelSelectDiv);
+      show(playerDiv);
       page = Page.Player;
     }
   }
@@ -97,8 +97,8 @@ function connect(fail) {
           viewChannelSelect(state);
         } else {
           console.error("No channels to connect to");
-          hide(channelSelectEl);
-          hide(playerEl);
+          hide(channelSelectDiv);
+          hide(playerDiv);
         }
       }
     });
@@ -136,15 +136,15 @@ function togglePlayPause() {
   send(togglePlay());
 }
 
-connectionEl.addEventListener("click", disconnectChannel);
-playPauseEl.addEventListener("click", togglePlayPause);
-playUrlEl.addEventListener("click", promptPlayUrl);
+connectedChannelButton.addEventListener("click", disconnectChannel);
+mediaButton.addEventListener("click", togglePlayPause);
+playUrlButton.addEventListener("click", promptPlayUrl);
 
 if (module.hot) {
   module.hot.dispose(() => {
-    connectionEl.removeEventListener("click", disconnectChannel);
-    playPauseEl.removeEventListener("click", togglePlayPause);
-    playUrlEl.removeEventListener("click", promptPlayUrl);
+    connectedChannelButton.removeEventListener("click", disconnectChannel);
+    mediaButton.removeEventListener("click", togglePlayPause);
+    playUrlButton.removeEventListener("click", promptPlayUrl);
   });
 }
 
