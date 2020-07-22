@@ -11,6 +11,7 @@ const noop = () => {};
 const wss = new WS.Server({ port });
 
 let conn;
+let dispatcher;
 let disconnect = noop;
 let send = noop;
 
@@ -32,7 +33,6 @@ process.on("SIGINT", () => {
 
 wss.on("connection", (ws) => {
   async function connectToVoiceChannel(channelId) {
-    console.log("Connecting to", channelId);
     const voiceChannel = discordClient.channels.cache
       .array()
       .find((channel) => channel.id === channelId);
@@ -42,6 +42,10 @@ wss.on("connection", (ws) => {
     } catch (error) {
       sendError(error);
     }
+
+    discordClient.user.setActivity("commands", { type: "LISTENING" });
+
+    console.log(discordClient);
 
     disconnect = () => {
       console.log("Disconnecting from voice channel");
@@ -55,7 +59,7 @@ wss.on("connection", (ws) => {
     send(state);
   }
 
-  async function playUrl(url) {
+  async function playUrl(url, update = true) {
     let source;
     try {
       source = ytdl(url, {
@@ -67,20 +71,28 @@ wss.on("connection", (ws) => {
     }
 
     source.on("info", (info) => {
-      const title = info.videoDetails.title;
+      dispatcher = conn
+        .play(source, { volume: 0.25 })
+        .on("finish", () => playUrl(url, false));
 
-      try {
-        conn.play(source, {
-          // type: "opus",
-        });
-      } catch (error) {
-        sendError(error);
+      if (update) {
+        state.mediaTitle = info.videoDetails.title;
+        state.playing = true;
+        send(state);
+        discordClient.user.setActivity(state.mediaTitle, { type: "PLAYING" });
       }
-
-      state.mediaTitle = title;
-      state.playing = true;
-      send(state);
     });
+  }
+
+  function togglePlay() {
+    if (state.playing) {
+      state.playing = false;
+      if (dispatcher) dispatcher.pause();
+    } else {
+      state.playing = true;
+      if (dispatcher) dispatcher.resume();
+    }
+    send(state);
   }
 
   send = function (object) {
@@ -115,6 +127,10 @@ wss.on("connection", (ws) => {
         playUrl(action.url);
         break;
 
+      case "TOGGLE_PLAY":
+        togglePlay();
+        break;
+
       default:
         console.log("WS action received:", action);
     }
@@ -128,7 +144,12 @@ discordClient.on("ready", () => {
     channels: discordClient.channels.cache
       .array()
       .filter((c) => c.type === "voice")
-      .map((c) => ({ id: c.id, name: `${c.guild.name} – ${c.name}` })),
+      .map((c) => ({
+        iconUrl: c.guild.iconURL(),
+        id: c.id,
+        name: `${c.guild.name} – ${c.name}`,
+      }))
+      .sort((a, b) => (a.name < b.name ? -1 : 1)),
   };
 });
 

@@ -5,27 +5,24 @@
 }
 
 :root {
-  /* Colors */
-  --black: #3b393c;
-  --cyan-dark: #5ac3d9;
-  --cyan-light: #90cfd4;
-  --gray-dark: #69696c;
-  --gray-light: #ece9e0;
-  --green-dark: #73854a;
-  --green-light: #b9cb65;
-  --orange-dark: #d05226;
-  --orange-light: #f57840;
-  --pink-dark: #d25383;
-  --pink-light: #e59ab6;
-  --purple-dark: #9183b2;
-  --purple-light: #a9a3cf;
-  --red-dark: #951f1f;
-  --red-light: #c1424f;
-  --turquoise-dark: #036273;
-  --turquoise-light: #438889;
-  --white: #fcfbf6;
-  --yellow-dark: #f9b81a;
-  --yellow-light: #ffcd03;
+  /* Nord colors */
+  --black: #22262f;
+  --red: #bf616a;
+  --orange: #d08770;
+  --yellow: #ebcb8b;
+  --green: #a3be8c;
+  --purple: #b48ead;
+  --blue-dark: #5e81ac;
+  --blue-light: #81a1c1;
+  --mint: #8fbcbb;
+  --cyan: #88c0d0;
+  --gray-darkest: #2e3440;
+  --gray-darker: #3b4252;
+  --gray-dark: #434c5e;
+  --gray: #4c566a;
+  --gray-light: #d8dee9;
+  --gray-lighter: #e5e9f0;
+  --white: #eceff4;
 
   /* Sizes */
   --huge: 32px;
@@ -42,7 +39,7 @@ a {
 }
 
 a:hover {
-  color: var(--red-light);
+  color: var(--red);
   text-decoration: line-through;
 }
 
@@ -56,42 +53,44 @@ body {
 }
 
 button {
-  background-color: var(--white);
-  border-color: var(--white);
-  border-style: solid;
-  border-width: 2px;
+  align-items: center;
+  background-color: var(--gray-dark);
+  border: none;
+  color: var(--white);
   cursor: pointer;
+  display: flex;
   font-size: 12px;
   font-weight: 700;
+  justify-content: center;
+  margin-top: var(--medium);
   outline: none;
-  padding: var(--small) var(--medium);
+  padding: var(--medium);
   text-transform: uppercase;
+  transition: background-color 100ms ease-out;
   vertical-align: top;
 }
 
 button:disabled {
   cursor: not-allowed;
+  opacity: 0.8;
 }
 
 button:disabled > * {
   opacity: 0.5;
 }
 
-button.-secondary {
-  background-color: transparent;
-  color: var(--white);
+button:hover:not(:disabled) {
+  background-color: var(--gray);
 }
 
-button.-text {
-  background-color: transparent;
-  border-width: 0px;
-  color: var(--green-light);
-  font-size: 16px;
-  padding: var(--small) 0px;
-  text-transform: none;
+button > img {
+  margin-right: var(--large);
+  max-height: 40px;
 }
 
 label {
+  color: var(--gray);
+  cursor: inherit;
   font-family: "Baloo 2", cursive;
   font-weight: 500;
 }
@@ -108,6 +107,18 @@ p:last-child {
   margin-bottom: var(--medium);
 }
 
-.page {
-  display: none;
+.page.-hidden {
+  display: none !important;
+}
+
+#ChannelSelect {
+  display: flex;
+  flex-direction: column;
+  margin: 0px var(--medium);
+}
+
+#Player {
+  display: flex;
+  flex-direction: column;
+  margin: var(--medium);
 }

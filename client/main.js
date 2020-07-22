@@ -1,4 +1,4 @@
-import { connectToChannel, disconnect, playUrl } from "./actions";
+import { connectToChannel, disconnect, playUrl, togglePlay } from "./actions";
 
 const Page = {
   ChannelSelect: "CHANNEL_SELECT",
@@ -11,7 +11,6 @@ const connectionEl = document.getElementById("Connection");
 const mediaEl = document.getElementById("Media");
 const mediaTitleEl = document.getElementById("MediaTitle");
 const playerEl = document.getElementById("Player");
-const playFileEl = document.getElementById("PlayFile");
 const playPauseEl = document.getElementById("PlayPause");
 const playUrlEl = document.getElementById("PlayUrl");
 
@@ -35,7 +34,15 @@ function connect(fail) {
 
     state.channels.forEach((channel) => {
       const button = document.createElement("button");
-      button.textContent = channel.name;
+
+      const icon = document.createElement("img");
+      icon.setAttribute("src", channel.iconUrl);
+      button.appendChild(icon);
+
+      const name = document.createElement("span");
+      name.textContent = `Join ${channel.name}`;
+      button.appendChild(name);
+
       button.addEventListener("click", () => {
         hide(channelSelectEl);
         page = null;
@@ -53,9 +60,9 @@ function connect(fail) {
 
   function viewPlayer(state) {
     channelNameEl.textContent = state.connectedChannel;
-    console.log(state);
 
-    if (state.playing) {
+    if (state.mediaTitle) {
+      playPauseEl.textContent = state.playing ? "Pause" : "Play";
       mediaTitleEl.textContent = state.mediaTitle;
       show(mediaEl);
     } else {
@@ -82,6 +89,7 @@ function connect(fail) {
 
     socket.addEventListener("message", (event) => {
       const state = JSON.parse(event.data);
+      console.log(state); // FIXME
       if (state.online) {
         if (state.connectedChannel) {
           viewPlayer(state);
@@ -103,7 +111,7 @@ function disconnectChannel() {
 }
 
 function hide(element) {
-  element.style.display = "none";
+  element.classList.add("-hidden");
 }
 
 function promptPlayUrl() {
@@ -114,7 +122,7 @@ function promptPlayUrl() {
 }
 
 function show(element) {
-  element.style.display = "block";
+  element.classList.remove("-hidden");
 }
 
 function startConnection() {
@@ -124,12 +132,18 @@ function startConnection() {
   });
 }
 
+function togglePlayPause() {
+  send(togglePlay());
+}
+
 connectionEl.addEventListener("click", disconnectChannel);
+playPauseEl.addEventListener("click", togglePlayPause);
 playUrlEl.addEventListener("click", promptPlayUrl);
 
 if (module.hot) {
   module.hot.dispose(() => {
     connectionEl.removeEventListener("click", disconnectChannel);
+    playPauseEl.removeEventListener("click", togglePlayPause);
     playUrlEl.removeEventListener("click", promptPlayUrl);
   });
 }
