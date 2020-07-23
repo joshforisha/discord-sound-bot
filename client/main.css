@@ -88,6 +88,14 @@ button.-danger:hover:not(:disabled) {
   background-color: var(--red);
 }
 
+button.-success > span.action {
+  color: var(--black);
+}
+
+button.-success:hover:not(:disabled) {
+  background-color: var(--green);
+}
+
 button.-warning > span.action {
   color: var(--black);
 }
@@ -98,7 +106,6 @@ button.-warning:hover {
 
 button > img {
   border-radius: var(--small);
-  margin-right: var(--large);
   max-height: 40px;
 }
 
@@ -106,8 +113,12 @@ button > * {
   transition: opacity 100ms ease-out;
 }
 
-button:hover:not(:disabled) > * {
+button:hover:not(:disabled):not(.-plain) > * {
   opacity: 0.1;
+}
+
+button > img + span:not(.action) {
+  margin-left: var(--small);
 }
 
 button > span.action {

@@ -1,3 +1,5 @@
+import pauseIconUrl from "./icons/pause.png";
+import playIconUrl from "./icons/play.png";
 import { connectToChannel, disconnect, playUrl, togglePlay } from "./actions";
 
 const Page = {
@@ -9,11 +11,12 @@ const channelSelectDiv = document.getElementById("ChannelSelect");
 const playerDiv = document.getElementById("Player");
 const connectedChannelButton = document.getElementById("ConnectedChannel");
 const mediaButton = document.getElementById("Media");
-const playUrlButton = document.getElementById("PlayUrl");
+const playYoutubeButton = document.getElementById("PlayYoutube");
 
 const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
 const connectedChannelName = connectedChannelButton.querySelector(".name");
 const mediaAction = mediaButton.querySelector(".action");
+const mediaIcon = mediaButton.querySelector(".icon");
 const mediaTitle = mediaButton.querySelector(".title");
 
 let connectDelay = 2000;
@@ -36,6 +39,7 @@ function connect(fail) {
 
     state.channels.forEach((channel) => {
       const button = document.createElement("button");
+      button.classList.add("-success");
 
       const icon = document.createElement("img");
       icon.setAttribute("src", channel.iconUrl);
@@ -72,6 +76,7 @@ function connect(fail) {
     if (state.mediaTitle) {
       mediaTitle.textContent = state.mediaTitle;
       mediaAction.textContent = state.playing ? "Pause" : "Play";
+      mediaIcon.setAttribute("src", state.playing ? pauseIconUrl : playIconUrl);
       show(mediaButton);
     } else {
       hide(mediaButton);
@@ -145,13 +150,13 @@ function togglePlayPause() {
 
 connectedChannelButton.addEventListener("click", disconnectChannel);
 mediaButton.addEventListener("click", togglePlayPause);
-playUrlButton.addEventListener("click", promptPlayUrl);
+playYoutubeButton.addEventListener("click", promptPlayUrl);
 
 if (module.hot) {
   module.hot.dispose(() => {
     connectedChannelButton.removeEventListener("click", disconnectChannel);
     mediaButton.removeEventListener("click", togglePlayPause);
-    playUrlButton.removeEventListener("click", promptPlayUrl);
+    playYoutubeButton.removeEventListener("click", promptPlayUrl);
   });
 }
 
