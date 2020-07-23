@@ -17,7 +17,9 @@ const channelSelectDiv = document.getElementById("ChannelSelect");
 const playerDiv = document.getElementById("Player");
 const connectedChannelButton = document.getElementById("ConnectedChannel");
 const mediaButton = document.getElementById("Media");
+const playFileButton = document.getElementById("PlayFile");
 const playYoutubeButton = document.getElementById("PlayYoutube");
+const selectFileInput = document.getElementById("SelectFile");
 const volumeInput = document.getElementById("Volume");
 
 const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
@@ -105,6 +107,9 @@ function connect(fail) {
   socket.addEventListener("open", () => {
     socket.addEventListener("close", () => {
       console.log("WS connection closed");
+      page = null;
+      hide(channelSelectDiv);
+      hide(playerDiv);
       connectDelay = 2000;
       startConnection();
     });
@@ -133,6 +138,8 @@ function connect(fail) {
 
 function disconnectChannel() {
   page = null;
+  hide(channelSelectDiv);
+  hide(playerDiv);
   send(disconnect());
 }
 
@@ -140,11 +147,19 @@ function hide(element) {
   element.classList.add("-hidden");
 }
 
+function openFileSelect() {
+  selectFileInput.click();
+}
+
 function promptPlayUrl() {
   const url = window.prompt("Enter URL");
   if (url) {
     send(playUrl(url));
   }
+}
+
+function selectFile(event) {
+  console.log(event);
 }
 
 function show(element) {
@@ -168,14 +183,18 @@ function updateVolume(event) {
 
 connectedChannelButton.addEventListener("click", disconnectChannel);
 mediaButton.addEventListener("click", togglePlayPause);
+playFileButton.addEventListener("click", openFileSelect);
 playYoutubeButton.addEventListener("click", promptPlayUrl);
+selectFileInput.addEventListener("change", selectFile);
 volumeInput.addEventListener("change", updateVolume);
 
 if (module.hot) {
   module.hot.dispose(() => {
     connectedChannelButton.removeEventListener("click", disconnectChannel);
     mediaButton.removeEventListener("click", togglePlayPause);
+    playFileButton.removeEventListener("click", openFileSelect);
     playYoutubeButton.removeEventListener("click", promptPlayUrl);
+    selectFileInput.removeEventListener("change", selectFile);
     volumeInput.removeEventListener("change", updateVolume);
   });
 }

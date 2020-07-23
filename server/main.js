@@ -46,6 +46,7 @@ wss.on("connection", (ws) => {
 
     disconnect = () => {
       console.log("Disconnecting from voice channel");
+      discordClient.user.setActivity(null);
       conn.disconnect();
       state.connectedChannel = null;
       send(state);
