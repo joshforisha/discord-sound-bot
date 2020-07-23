@@ -61,6 +61,7 @@ button {
   display: flex;
   font-size: 12px;
   font-weight: 700;
+  height: 56px;
   justify-content: center;
   margin-top: var(--medium);
   outline: none;
@@ -72,10 +73,6 @@ button {
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.8;
-}
-
-button:disabled > * {
   opacity: 0.5;
 }
 
@@ -83,10 +80,44 @@ button:hover:not(:disabled) {
   background-color: var(--gray-dark);
 }
 
+button.-blank {
+  background-color: transparent;
+}
+
+button.-danger:hover:not(:disabled) {
+  background-color: var(--red);
+}
+
+button.-warning > span.action {
+  color: var(--black);
+}
+
+button.-warning:hover {
+  background-color: var(--yellow);
+}
+
 button > img {
   border-radius: var(--small);
   margin-right: var(--large);
   max-height: 40px;
+}
+
+button > * {
+  transition: opacity 100ms ease-out;
+}
+
+button:hover:not(:disabled) > * {
+  opacity: 0.1;
+}
+
+button > span.action {
+  font-size: 1rem;
+  opacity: 0;
+  position: absolute;
+}
+
+button:hover:not(:disabled) > span.action {
+  opacity: 1;
 }
 
 label {
@@ -108,7 +139,7 @@ p:last-child {
   margin-bottom: var(--medium);
 }
 
-.page.-hidden {
+.-hidden {
   display: none !important;
 }
 
@@ -116,6 +147,22 @@ p:last-child {
   display: flex;
   flex-direction: column;
   margin: 0px var(--medium);
+}
+
+#Controls {
+  display: flex;
+}
+
+#Controls > button {
+  flex: 1;
+}
+
+#Controls > button:not(:first-of-type) {
+  margin-left: var(--small);
+}
+
+#Controls > button:not(:last-of-type) {
+  margin-right: var(--small);
 }
 
 #Player {

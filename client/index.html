@@ -10,17 +10,19 @@
   <body>
     <div class="page -hidden" id="ChannelSelect"></div>
     <div class="page -hidden" id="Player">
-      <button id="ConnectedChannel">
+      <button class="-blank -danger" id="ConnectedChannel">
         <img class="icon" />
         <span class="name"></span>
+        <span class="action">Disconnect</span>
       </button>
-      <button id="Media">
-        <span class="title"></span>
-      </button>
-      <section>
-        <button disabled id="PlayFile">Play File</button>
-        <button id="PlayUrl">Play URL</button>
+      <section id="Controls">
+        <button disabled id="PlayFile"><span>Play File</span></button>
+        <button id="PlayUrl"><span>Play URL</span></button>
       </section>
+      <button class="-blank -hidden -warning" id="Media">
+        <span class="title"></span>
+        <span class="action"></span>
+      </button>
     </div>
   </body>
 </html>

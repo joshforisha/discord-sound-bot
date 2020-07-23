@@ -45,8 +45,6 @@ wss.on("connection", (ws) => {
 
     discordClient.user.setActivity("commands", { type: "LISTENING" });
 
-    console.log(discordClient);
-
     disconnect = () => {
       console.log("Disconnecting from voice channel");
       conn.disconnect();

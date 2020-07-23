@@ -8,11 +8,13 @@ const Page = {
 const channelSelectDiv = document.getElementById("ChannelSelect");
 const playerDiv = document.getElementById("Player");
 const connectedChannelButton = document.getElementById("ConnectedChannel");
+const mediaButton = document.getElementById("Media");
+const playUrlButton = document.getElementById("PlayUrl");
+
 const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
 const connectedChannelName = connectedChannelButton.querySelector(".name");
-const mediaButton = document.getElementById("Media");
+const mediaAction = mediaButton.querySelector(".action");
 const mediaTitle = mediaButton.querySelector(".title");
-const playUrlButton = document.getElementById("PlayUrl");
 
 let connectDelay = 2000;
 let page = null;
@@ -40,8 +42,13 @@ function connect(fail) {
       button.appendChild(icon);
 
       const name = document.createElement("span");
-      name.textContent = `Join ${channel.name}`;
+      name.textContent = channel.name;
       button.appendChild(name);
+
+      const action = document.createElement("span");
+      action.classList.add("action");
+      action.textContent = "Join";
+      button.appendChild(action);
 
       button.addEventListener("click", () => {
         hide(channelSelectDiv);
@@ -64,6 +71,7 @@ function connect(fail) {
 
     if (state.mediaTitle) {
       mediaTitle.textContent = state.mediaTitle;
+      mediaAction.textContent = state.playing ? "Pause" : "Play";
       show(mediaButton);
     } else {
       hide(mediaButton);
@@ -89,7 +97,6 @@ function connect(fail) {
 
     socket.addEventListener("message", (event) => {
       const state = JSON.parse(event.data);
-      console.log(state); // FIXME
       if (state.online) {
         if (state.connectedChannel) {
           viewPlayer(state);
