@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const Discord = require("discord.js");
 const WS = require("ws");
-const ytdl = require("ytdl-core");
+const ytdl = require("ytdl-core-discord");
 
 const port = 5000;
 
@@ -21,6 +21,7 @@ let state = {
   mediaTitle: null,
   online: false,
   playing: false,
+  volume: 0.5,
 };
 
 process.on("SIGINT", () => {
@@ -43,8 +44,6 @@ wss.on("connection", (ws) => {
       sendError(error);
     }
 
-    discordClient.user.setActivity("commands", { type: "LISTENING" });
-
     disconnect = () => {
       console.log("Disconnecting from voice channel");
       conn.disconnect();
@@ -62,9 +61,17 @@ wss.on("connection", (ws) => {
   }
 
   async function playUrl(url, update = true) {
+    let title;
+    try {
+      const info = await ytdl.getBasicInfo(url);
+      title = info.title;
+    } catch (error) {
+      sendError(error);
+    }
+
     let source;
     try {
-      source = ytdl(url, {
+      source = await ytdl(url, {
         liveBuffer: 5000,
         quality: "highestaudio",
       });
@@ -72,18 +79,24 @@ wss.on("connection", (ws) => {
       sendError(error);
     }
 
-    source.on("info", (info) => {
-      dispatcher = conn
-        .play(source, { volume: 0.25 })
-        .on("finish", () => playUrl(url, false));
+    dispatcher = conn.play(source, { type: "opus", volume: state.volume });
 
-      if (update) {
-        state.mediaTitle = info.videoDetails.title;
-        state.playing = true;
-        send(state);
-        discordClient.user.setActivity(state.mediaTitle, { type: "PLAYING" });
-      }
+    /*
+    source.on("info", (info) => {
+      console.log("Info:", info);
+      dispatcher = conn
+        // .play(source, { volume: 0.25 })
+        .play(source, { streamType: "opus" })
+        .on("finish", () => playUrl(url, false));
     });
+    // */
+
+    if (update) {
+      state.mediaTitle = title;
+      state.playing = true;
+      send(state);
+      discordClient.user.setActivity(state.mediaTitle, { type: "PLAYING" });
+    }
   }
 
   function togglePlay() {
@@ -127,6 +140,11 @@ wss.on("connection", (ws) => {
 
       case "PLAY_URL":
         playUrl(action.url);
+        break;
+
+      case "SET_VOLUME":
+        state.volume = action.volume;
+        if (dispatcher) dispatcher.setVolume(action.volume);
         break;
 
       case "TOGGLE_PLAY":
