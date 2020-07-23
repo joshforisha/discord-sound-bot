@@ -62,34 +62,27 @@ wss.on("connection", (ws) => {
 
   async function playUrl(url, update = true) {
     let title;
-    try {
-      const info = await ytdl.getBasicInfo(url);
-      title = info.title;
-    } catch (error) {
-      sendError(error);
+    if (update) {
+      try {
+        const info = await ytdl.getBasicInfo(url);
+        title = info.title;
+      } catch (error) {
+        sendError(error);
+      }
     }
 
     let source;
     try {
       source = await ytdl(url, {
-        liveBuffer: 5000,
         quality: "highestaudio",
       });
     } catch (error) {
       sendError(error);
     }
 
-    dispatcher = conn.play(source, { type: "opus", volume: state.volume });
-
-    /*
-    source.on("info", (info) => {
-      console.log("Info:", info);
-      dispatcher = conn
-        // .play(source, { volume: 0.25 })
-        .play(source, { streamType: "opus" })
-        .on("finish", () => playUrl(url, false));
-    });
-    // */
+    dispatcher = conn
+      .play(source, { seek: 0, type: "opus", volume: state.volume })
+      .on("finish", () => playUrl(url, false));
 
     if (update) {
       state.mediaTitle = title;

@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "build-client": "parcel build --public-url /soundbot/dist/ client/index.html",
     "lint": "eslint client/**/*.js server/**/*.js",
     "serve-client": "parcel serve client/index.html",
     "serve-server": "nodemon server/main.js",
