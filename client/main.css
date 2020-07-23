@@ -181,3 +181,7 @@ p:last-child {
   flex-direction: column;
   margin: 0px var(--medium);
 }
+
+#Volume {
+  margin-top: var(--medium);
+}

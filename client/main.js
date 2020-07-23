@@ -1,6 +1,12 @@
 import pauseIconUrl from "./icons/pause.png";
 import playIconUrl from "./icons/play.png";
-import { connectToChannel, disconnect, playUrl, togglePlay } from "./actions";
+import {
+  connectToChannel,
+  disconnect,
+  playUrl,
+  setVolume,
+  togglePlay,
+} from "./actions";
 
 const Page = {
   ChannelSelect: "CHANNEL_SELECT",
@@ -12,6 +18,7 @@ const playerDiv = document.getElementById("Player");
 const connectedChannelButton = document.getElementById("ConnectedChannel");
 const mediaButton = document.getElementById("Media");
 const playYoutubeButton = document.getElementById("PlayYoutube");
+const volumeInput = document.getElementById("Volume");
 
 const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
 const connectedChannelName = connectedChannelButton.querySelector(".name");
@@ -78,8 +85,10 @@ function connect(fail) {
       mediaAction.textContent = state.playing ? "Pause" : "Play";
       mediaIcon.setAttribute("src", state.playing ? pauseIconUrl : playIconUrl);
       show(mediaButton);
+      show(volumeInput);
     } else {
       hide(mediaButton);
+      hide(volumeInput);
     }
 
     if (page !== Page.Player) {
@@ -102,6 +111,7 @@ function connect(fail) {
 
     socket.addEventListener("message", (event) => {
       const state = JSON.parse(event.data);
+
       if (state.online) {
         if (state.connectedChannel) {
           viewPlayer(state);
@@ -112,6 +122,10 @@ function connect(fail) {
           hide(channelSelectDiv);
           hide(playerDiv);
         }
+      }
+
+      if ("volume" in state) {
+        volumeInput.value = state.volume;
       }
     });
   });
@@ -148,15 +162,21 @@ function togglePlayPause() {
   send(togglePlay());
 }
 
+function updateVolume(event) {
+  send(setVolume(event.target.value));
+}
+
 connectedChannelButton.addEventListener("click", disconnectChannel);
 mediaButton.addEventListener("click", togglePlayPause);
 playYoutubeButton.addEventListener("click", promptPlayUrl);
+volumeInput.addEventListener("change", updateVolume);
 
 if (module.hot) {
   module.hot.dispose(() => {
     connectedChannelButton.removeEventListener("click", disconnectChannel);
     mediaButton.removeEventListener("click", togglePlayPause);
     playYoutubeButton.removeEventListener("click", promptPlayUrl);
+    volumeInput.removeEventListener("change", updateVolume);
   });
 }
 
