@@ -52,7 +52,7 @@ discordClient.on("ready", () => {
 
       sounds = fs
         .readdirSync("sounds")
-        .filter((filename) => filename !== ".gitkeep")
+        .filter((filename) => !filename.startsWith("."))
         .reduce((xs, filename) => {
           const name = path.basename(filename, path.extname(filename));
           xs[name] = filename;
@@ -65,6 +65,9 @@ discordClient.on("ready", () => {
         discordClient.user.setActivity(null);
         conn.disconnect();
         state.currentChannel = null;
+        state.currentMedia = null;
+        state.playing = false;
+        state.sounds = [];
         send(state);
         disconnect = noop;
       };
@@ -77,12 +80,17 @@ discordClient.on("ready", () => {
       send(state);
     }
 
-    function playSound(soundName, update = true) {
+    function playSound(soundName, update = false) {
+      const filename = `./sounds/${sounds[soundName]}`;
+      const stream = fs.createReadStream(filename);
+
       dispatcher = conn
-        .play(`./sounds/${sounds[soundName]}`, {
+        .play(stream, {
+          bitrate: "auto",
+          type: filename.endsWith(".ogg") ? "ogg/opus" : "unknown",
           volume: state.volume,
         })
-        .on("finish", () => playSound(soundName, false));
+        .on("finish", () => playSound(soundName));
 
       if (update) {
         state.currentMedia = soundName;
@@ -92,7 +100,7 @@ discordClient.on("ready", () => {
       }
     }
 
-    async function playUrl(url, update = true) {
+    async function playUrl(url, update = false) {
       let title;
       if (update) {
         try {
@@ -114,7 +122,7 @@ discordClient.on("ready", () => {
 
       dispatcher = conn
         .play(source, { seek: 0, type: "opus", volume: state.volume })
-        .on("finish", () => playUrl(url, false));
+        .on("finish", () => playUrl(url));
 
       if (update) {
         state.currentMedia = title;
@@ -164,11 +172,11 @@ discordClient.on("ready", () => {
           break;
 
         case "PLAY_SOUND":
-          playSound(action.sound);
+          playSound(action.sound, true);
           break;
 
         case "PLAY_URL":
-          playUrl(action.url);
+          playUrl(action.url, true);
           break;
 
         case "SET_VOLUME":
