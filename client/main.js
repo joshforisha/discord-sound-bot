@@ -1,8 +1,7 @@
-import pauseIconUrl from "./icons/pause.png";
-import playIconUrl from "./icons/play.png";
 import {
   connectToChannel,
   disconnect,
+  playSound,
   playUrl,
   setVolume,
   togglePlay,
@@ -15,18 +14,13 @@ const Page = {
 
 const channelSelectDiv = document.getElementById("ChannelSelect");
 const playerDiv = document.getElementById("Player");
-const connectedChannelButton = document.getElementById("ConnectedChannel");
-const mediaButton = document.getElementById("Media");
-const playFileButton = document.getElementById("PlayFile");
+const currentChannelButton = document.getElementById("CurrentChannel");
+const librarySection = document.getElementById("Library");
 const playYoutubeButton = document.getElementById("PlayYoutube");
-const selectFileInput = document.getElementById("SelectFile");
 const volumeInput = document.getElementById("Volume");
 
-const connectedChannelIcon = connectedChannelButton.querySelector(".icon");
-const connectedChannelName = connectedChannelButton.querySelector(".name");
-const mediaAction = mediaButton.querySelector(".action");
-const mediaIcon = mediaButton.querySelector(".icon");
-const mediaTitle = mediaButton.querySelector(".title");
+const currentChannelIcon = currentChannelButton.querySelector(".icon");
+const currentChannelName = currentChannelButton.querySelector(".name");
 
 let connectDelay = 2000;
 let page = null;
@@ -42,6 +36,12 @@ function connect(fail) {
   };
 
   function viewChannelSelect(state) {
+    if (page !== Page.ChannelSelect) {
+      hide(playerDiv);
+      show(channelSelectDiv);
+      page = Page.ChannelSelect;
+    }
+
     Array.from(channelSelectDiv.children)
       .filter((e) => e instanceof HTMLButtonElement)
       .forEach((e) => channelSelectDiv.removeChild(e));
@@ -60,7 +60,7 @@ function connect(fail) {
 
       const action = document.createElement("span");
       action.classList.add("action");
-      action.textContent = "Join";
+      action.textContent = "Join ⟩";
       button.appendChild(action);
 
       button.addEventListener("click", () => {
@@ -70,33 +70,62 @@ function connect(fail) {
       });
       channelSelectDiv.appendChild(button);
     });
-
-    if (page !== Page.ChannelSelect) {
-      hide(playerDiv);
-      show(channelSelectDiv);
-      page = Page.ChannelSelect;
-    }
   }
 
   function viewPlayer(state) {
-    connectedChannelIcon.setAttribute("src", state.connectedChannel.iconUrl);
-    connectedChannelName.textContent = state.connectedChannel.name;
-
-    if (state.mediaTitle) {
-      mediaTitle.textContent = state.mediaTitle;
-      mediaAction.textContent = state.playing ? "Pause" : "Play";
-      mediaIcon.setAttribute("src", state.playing ? pauseIconUrl : playIconUrl);
-      show(mediaButton);
-      show(volumeInput);
-    } else {
-      hide(mediaButton);
-      hide(volumeInput);
-    }
-
     if (page !== Page.Player) {
+      Array.from(
+        librarySection.querySelectorAll("button.-sound")
+      ).forEach((button) => librarySection.removeChild(button));
+
+      state.sounds.forEach((name) => {
+        const button = document.createElement("button");
+        button.classList.add("-sound");
+        button.setAttribute("data-name", name);
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = name;
+        button.appendChild(nameSpan);
+
+        button.addEventListener("click", () => {
+          if (
+            button.classList.contains("-paused") ||
+            button.classList.contains("-playing")
+          ) {
+            send(togglePlay());
+          } else {
+            send(playSound(name));
+          }
+        });
+
+        librarySection.appendChild(button);
+      });
+
       hide(channelSelectDiv);
       show(playerDiv);
       page = Page.Player;
+    }
+
+    currentChannelIcon.setAttribute("src", state.currentChannel.iconUrl);
+    currentChannelName.textContent = state.currentChannel.name;
+
+    if ("currentMedia" in state) {
+      Array.from(librarySection.querySelectorAll("button")).forEach(
+        (button) => {
+          if (button.getAttribute("data-name") === state.currentMedia) {
+            if (state.playing) {
+              button.classList.remove("-paused");
+              button.classList.add("-playing");
+            } else {
+              button.classList.remove("-playing");
+              button.classList.add("-paused");
+            }
+          } else {
+            button.classList.remove("-paused");
+            button.classList.remove("-playing");
+          }
+        }
+      );
     }
   }
 
@@ -118,7 +147,7 @@ function connect(fail) {
       const state = JSON.parse(event.data);
 
       if (state.online) {
-        if (state.connectedChannel) {
+        if (state.currentChannel) {
           viewPlayer(state);
         } else if (state.channels.length > 0) {
           viewChannelSelect(state);
@@ -147,19 +176,11 @@ function hide(element) {
   element.classList.add("-hidden");
 }
 
-function openFileSelect() {
-  selectFileInput.click();
-}
-
 function promptPlayUrl() {
   const url = window.prompt("Enter URL");
   if (url) {
     send(playUrl(url));
   }
-}
-
-function selectFile(event) {
-  console.log(event);
 }
 
 function show(element) {
@@ -173,28 +194,18 @@ function startConnection() {
   });
 }
 
-function togglePlayPause() {
-  send(togglePlay());
-}
-
 function updateVolume(event) {
   send(setVolume(event.target.value));
 }
 
-connectedChannelButton.addEventListener("click", disconnectChannel);
-mediaButton.addEventListener("click", togglePlayPause);
-playFileButton.addEventListener("click", openFileSelect);
+currentChannelButton.addEventListener("click", disconnectChannel);
 playYoutubeButton.addEventListener("click", promptPlayUrl);
-selectFileInput.addEventListener("change", selectFile);
 volumeInput.addEventListener("change", updateVolume);
 
 if (module.hot) {
   module.hot.dispose(() => {
-    connectedChannelButton.removeEventListener("click", disconnectChannel);
-    mediaButton.removeEventListener("click", togglePlayPause);
-    playFileButton.removeEventListener("click", openFileSelect);
+    currentChannelButton.removeEventListener("click", disconnectChannel);
     playYoutubeButton.removeEventListener("click", promptPlayUrl);
-    selectFileInput.removeEventListener("change", selectFile);
     volumeInput.removeEventListener("change", updateVolume);
   });
 }

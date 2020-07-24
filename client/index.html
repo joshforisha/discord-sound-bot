@@ -3,35 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="initial-scale=1, user-scalable=no, width=device-width" />
-    <title>Tone Test</title>
+    <title>Soundbot Controls</title>
     <link rel="stylesheet" href="./main.css" />
     <script defer src="./main.js"></script>
   </head>
   <body>
     <div class="page -hidden" id="ChannelSelect"></div>
     <div class="page -hidden" id="Player">
-      <button class="-blank -danger" id="ConnectedChannel">
+      <button class="-blank -danger" id="CurrentChannel">
         <img class="icon" />
         <span class="name"></span>
-        <span class="action">Disconnect</span>
+        <span class="action">&lang; Disconnect</span>
       </button>
-      <section id="Controls">
-        <button id="PlayFile">
-          <img alt="File icon" class="icon" src="./icons/file.png" />
-          <span class="action">Select File</span>
-        </button>
-        <input class="-hidden" id="SelectFile" type="file" />
-        <button id="PlayYoutube">
+      <input id="Volume" max="1" min="0" step="0.05" type="range" />
+      <section id="Library">
+        <button class="-hidden" id="PlayYoutube">
           <img alt="Youtube icon" class="icon" src="./icons/youtube.png" />
           <span class="action">Enter URL</span>
         </button>
       </section>
-      <button class="-blank -hidden -warning" id="Media">
-        <img alt="Media action icon" class="icon" />
-        <span class="title"></span>
-        <span class="action"></span>
-      </button>
-      <input class="-hidden" id="Volume" max="1" min="0" step="0.05" type="range" />
     </div>
   </body>
 </html>

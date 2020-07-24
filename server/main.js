@@ -1,6 +1,8 @@
 require("dotenv").config();
 
 const Discord = require("discord.js");
+const fs = require("fs");
+const path = require("path");
 const WS = require("ws");
 const ytdl = require("ytdl-core-discord");
 
@@ -14,13 +16,15 @@ let conn;
 let dispatcher;
 let disconnect = noop;
 let send = noop;
+let sounds = [];
 
 let state = {
   channels: [],
-  connectedChannel: null,
-  mediaTitle: null,
+  currentChannel: null,
+  currentMedia: null,
   online: false,
   playing: false,
+  sounds: [],
   volume: 0.5,
 };
 
@@ -44,21 +48,46 @@ wss.on("connection", (ws) => {
       sendError(error);
     }
 
+    sounds = fs
+      .readdirSync("sounds")
+      .filter((filename) => filename !== ".gitkeep")
+      .reduce((xs, filename) => {
+        const name = path.basename(filename, path.extname(filename));
+        xs[name] = filename;
+        return xs;
+      }, {});
+    state.sounds = Object.keys(sounds);
+
     disconnect = () => {
       console.log("Disconnecting from voice channel");
       discordClient.user.setActivity(null);
       conn.disconnect();
-      state.connectedChannel = null;
+      state.currentChannel = null;
       send(state);
       disconnect = noop;
     };
 
-    state.connectedChannel = {
+    state.currentChannel = {
       iconUrl: voiceChannel.guild.iconURL(),
       id: voiceChannel.id,
       name: `${voiceChannel.guild.name} – ${voiceChannel.name}`,
     };
     send(state);
+  }
+
+  function playSound(soundName, update = true) {
+    dispatcher = conn
+      .play(`./sounds/${sounds[soundName]}`, {
+        volume: state.volume,
+      })
+      .on("finish", () => playSound(soundName, false));
+
+    if (update) {
+      state.currentMedia = soundName;
+      state.playing = true;
+      send(state);
+      discordClient.user.setActivity(state.currentMedia, { type: "PLAYING" });
+    }
   }
 
   async function playUrl(url, update = true) {
@@ -86,10 +115,10 @@ wss.on("connection", (ws) => {
       .on("finish", () => playUrl(url, false));
 
     if (update) {
-      state.mediaTitle = title;
+      state.currentMedia = title;
       state.playing = true;
       send(state);
-      discordClient.user.setActivity(state.mediaTitle, { type: "PLAYING" });
+      discordClient.user.setActivity(state.currentMedia, { type: "PLAYING" });
     }
   }
 
@@ -130,6 +159,10 @@ wss.on("connection", (ws) => {
 
       case "DISCONNECT":
         disconnect();
+        break;
+
+      case "PLAY_SOUND":
+        playSound(action.sound);
         break;
 
       case "PLAY_URL":

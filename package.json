@@ -2,10 +2,11 @@
   "private": true,
   "scripts": {
     "build-client": "parcel build --public-url /soundbot/dist/ client/index.html",
+    "dev-client": "parcel serve client/index.html",
+    "dev-server": "nodemon server/main.js",
     "lint": "eslint client/**/*.js server/**/*.js",
-    "serve-client": "parcel serve client/index.html",
-    "serve-server": "nodemon server/main.js",
-    "start": "concurrently \"npm:serve-*\"",
+    "serve": "node server/main.js",
+    "start": "echo \"TODO\"",
     "test": "npm run lint"
   },
   "devDependencies": {

@@ -65,7 +65,7 @@ button {
   justify-content: center;
   margin-top: var(--medium);
   outline: none;
-  padding: var(--small);
+  padding: var(--small) var(--medium);
   text-transform: uppercase;
   transition: background-color 100ms ease-out;
   vertical-align: top;
@@ -86,6 +86,16 @@ button.-blank {
 
 button.-danger:hover:not(:disabled) {
   background-color: var(--red);
+}
+
+button.-sound.-paused {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+
+button.-sound.-playing {
+  background-color: var(--green);
+  color: var(--black);
 }
 
 button.-success > span.action {
@@ -113,7 +123,7 @@ button > * {
   transition: opacity 100ms ease-out;
 }
 
-button:hover:not(:disabled):not(.-plain) > * {
+button:hover:not(:disabled):not(.-sound) > * {
   opacity: 0.1;
 }
 
@@ -160,28 +170,31 @@ p:last-child {
   margin: 0px var(--medium);
 }
 
-#Controls {
+#CurrentChannel {
+  margin: var(--medium);
+}
+
+#Library {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-left: var(--medium);
 }
 
-#Controls > button {
-  flex: 1;
-}
-
-#Controls > button:not(:first-of-type) {
-  margin-left: var(--small);
-}
-
-#Controls > button:not(:last-of-type) {
-  margin-right: var(--small);
+#Library > button {
+  margin-right: var(--medium);
 }
 
 #Player {
   display: flex;
   flex-direction: column;
-  margin: 0px var(--medium);
+}
+
+#PlayYoutube {
+  min-width: 128px;
 }
 
 #Volume {
-  margin-top: var(--medium);
+  cursor: pointer;
+  margin: var(--medium) var(--medium) 0px;
 }
