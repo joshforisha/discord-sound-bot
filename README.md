@@ -1,6 +1,6 @@
-# Soundbot
+# Discord Sound Bot
 
-A soundboard desktop app for your own Discord bots.
+A self-hosted soundboard Discord app, with graphical interface for easy controls.
 
 ## Setup
 
