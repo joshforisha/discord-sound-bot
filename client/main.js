@@ -4,210 +4,210 @@ import {
   playSound,
   playUrl,
   setVolume,
-  togglePlay,
-} from "./actions";
+  togglePlay
+} from './actions'
 
 const Page = {
-  ChannelSelect: "CHANNEL_SELECT",
-  Player: "PLAYER",
-};
+  ChannelSelect: 'CHANNEL_SELECT',
+  Player: 'PLAYER'
+}
 
-const channelSelectDiv = document.getElementById("ChannelSelect");
-const playerDiv = document.getElementById("Player");
-const currentChannelButton = document.getElementById("CurrentChannel");
-const librarySection = document.getElementById("Library");
-const playYoutubeButton = document.getElementById("PlayYoutube");
-const volumeInput = document.getElementById("Volume");
+const channelSelectDiv = document.getElementById('ChannelSelect')
+const playerDiv = document.getElementById('Player')
+const currentChannelButton = document.getElementById('CurrentChannel')
+const librarySection = document.getElementById('Library')
+const playYoutubeButton = document.getElementById('PlayYoutube')
+const volumeInput = document.getElementById('Volume')
 
-const currentChannelIcon = currentChannelButton.querySelector(".icon");
-const currentChannelName = currentChannelButton.querySelector(".name");
+const currentChannelIcon = currentChannelButton.querySelector('.icon')
+const currentChannelName = currentChannelButton.querySelector('.name')
 
-let connectDelay = 2000;
-let page = null;
+let connectDelay = 2000
+let page = null
 
-const noop = () => {};
-let send = noop;
+const noop = () => {}
+let send = noop
 
-function connect(fail) {
-  const socket = new WebSocket("ws://localhost:5000");
+function connect (fail) {
+  const socket = new window.WebSocket('ws://localhost:5000')
 
   send = function (object) {
-    socket.send(JSON.stringify(object));
-  };
+    socket.send(JSON.stringify(object))
+  }
 
-  function viewChannelSelect(state) {
+  function viewChannelSelect (state) {
     if (page !== Page.ChannelSelect) {
-      hide(playerDiv);
-      show(channelSelectDiv);
-      page = Page.ChannelSelect;
+      hide(playerDiv)
+      show(channelSelectDiv)
+      page = Page.ChannelSelect
     }
 
     Array.from(channelSelectDiv.children)
-      .filter((e) => e instanceof HTMLButtonElement)
-      .forEach((e) => channelSelectDiv.removeChild(e));
+      .filter((e) => e instanceof window.HTMLButtonElement)
+      .forEach((e) => channelSelectDiv.removeChild(e))
 
     state.channels.forEach((channel) => {
-      const button = document.createElement("button");
-      button.classList.add("-success");
+      const button = document.createElement('button')
+      button.classList.add('-success')
 
-      const icon = document.createElement("img");
-      icon.setAttribute("src", channel.iconUrl);
-      button.appendChild(icon);
+      const icon = document.createElement('img')
+      icon.setAttribute('src', channel.iconUrl)
+      button.appendChild(icon)
 
-      const name = document.createElement("span");
-      name.textContent = channel.name;
-      button.appendChild(name);
+      const name = document.createElement('span')
+      name.textContent = channel.name
+      button.appendChild(name)
 
-      const action = document.createElement("span");
-      action.classList.add("action");
-      action.textContent = "Join ⟩";
-      button.appendChild(action);
+      const action = document.createElement('span')
+      action.classList.add('action')
+      action.textContent = 'Join ⟩'
+      button.appendChild(action)
 
-      button.addEventListener("click", () => {
-        hide(channelSelectDiv);
-        page = null;
-        send(connectToChannel(channel.id));
-      });
-      channelSelectDiv.appendChild(button);
-    });
+      button.addEventListener('click', () => {
+        hide(channelSelectDiv)
+        page = null
+        send(connectToChannel(channel.id))
+      })
+      channelSelectDiv.appendChild(button)
+    })
   }
 
-  function viewPlayer(state) {
+  function viewPlayer (state) {
     if (page !== Page.Player) {
       Array.from(
-        librarySection.querySelectorAll("button.-sound")
-      ).forEach((button) => librarySection.removeChild(button));
+        librarySection.querySelectorAll('button.-sound')
+      ).forEach((button) => librarySection.removeChild(button))
 
       state.sounds.forEach((name) => {
-        const button = document.createElement("button");
-        button.classList.add("-sound");
-        button.setAttribute("data-name", name);
+        const button = document.createElement('button')
+        button.classList.add('-sound')
+        button.setAttribute('data-name', name)
 
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = name;
-        button.appendChild(nameSpan);
+        const nameSpan = document.createElement('span')
+        nameSpan.textContent = name
+        button.appendChild(nameSpan)
 
-        button.addEventListener("click", () => {
+        button.addEventListener('click', () => {
           if (
-            button.classList.contains("-paused") ||
-            button.classList.contains("-playing")
+            button.classList.contains('-paused') ||
+            button.classList.contains('-playing')
           ) {
-            send(togglePlay());
+            send(togglePlay())
           } else {
-            send(playSound(name));
+            send(playSound(name))
           }
-        });
+        })
 
-        librarySection.appendChild(button);
-      });
+        librarySection.appendChild(button)
+      })
 
-      hide(channelSelectDiv);
-      show(playerDiv);
-      page = Page.Player;
+      hide(channelSelectDiv)
+      show(playerDiv)
+      page = Page.Player
     }
 
-    currentChannelIcon.setAttribute("src", state.currentChannel.iconUrl);
-    currentChannelName.textContent = state.currentChannel.name;
+    currentChannelIcon.setAttribute('src', state.currentChannel.iconUrl)
+    currentChannelName.textContent = state.currentChannel.name
 
-    if ("currentMedia" in state) {
-      Array.from(librarySection.querySelectorAll("button")).forEach(
+    if ('currentMedia' in state) {
+      Array.from(librarySection.querySelectorAll('button')).forEach(
         (button) => {
-          if (button.getAttribute("data-name") === state.currentMedia) {
+          if (button.getAttribute('data-name') === state.currentMedia) {
             if (state.playing) {
-              button.classList.remove("-paused");
-              button.classList.add("-playing");
+              button.classList.remove('-paused')
+              button.classList.add('-playing')
             } else {
-              button.classList.remove("-playing");
-              button.classList.add("-paused");
+              button.classList.remove('-playing')
+              button.classList.add('-paused')
             }
           } else {
-            button.classList.remove("-paused");
-            button.classList.remove("-playing");
+            button.classList.remove('-paused')
+            button.classList.remove('-playing')
           }
         }
-      );
+      )
     }
   }
 
-  socket.addEventListener("error", () => {
-    fail();
-  });
+  socket.addEventListener('error', () => {
+    fail()
+  })
 
-  socket.addEventListener("open", () => {
-    socket.addEventListener("close", () => {
-      console.log("WS connection closed");
-      page = null;
-      hide(channelSelectDiv);
-      hide(playerDiv);
-      connectDelay = 2000;
-      startConnection();
-    });
+  socket.addEventListener('open', () => {
+    socket.addEventListener('close', () => {
+      console.log('WS connection closed')
+      page = null
+      hide(channelSelectDiv)
+      hide(playerDiv)
+      connectDelay = 2000
+      startConnection()
+    })
 
-    socket.addEventListener("message", (event) => {
-      const state = JSON.parse(event.data);
+    socket.addEventListener('message', (event) => {
+      const state = JSON.parse(event.data)
 
       if (state.online) {
         if (state.currentChannel) {
-          viewPlayer(state);
+          viewPlayer(state)
         } else if (state.channels.length > 0) {
-          viewChannelSelect(state);
+          viewChannelSelect(state)
         } else {
-          console.error("No channels to connect to");
-          hide(channelSelectDiv);
-          hide(playerDiv);
+          console.error('No channels to connect to')
+          hide(channelSelectDiv)
+          hide(playerDiv)
         }
       }
 
-      if ("volume" in state) {
-        volumeInput.value = state.volume;
+      if ('volume' in state) {
+        volumeInput.value = state.volume
       }
-    });
-  });
+    })
+  })
 }
 
-function disconnectChannel() {
-  page = null;
-  hide(channelSelectDiv);
-  hide(playerDiv);
-  send(disconnect());
+function disconnectChannel () {
+  page = null
+  hide(channelSelectDiv)
+  hide(playerDiv)
+  send(disconnect())
 }
 
-function hide(element) {
-  element.classList.add("-hidden");
+function hide (element) {
+  element.classList.add('-hidden')
 }
 
-function promptPlayUrl() {
-  const url = window.prompt("Enter URL");
+function promptPlayUrl () {
+  const url = window.prompt('Enter URL')
   if (url) {
-    send(playUrl(url));
+    send(playUrl(url))
   }
 }
 
-function show(element) {
-  element.classList.remove("-hidden");
+function show (element) {
+  element.classList.remove('-hidden')
 }
 
-function startConnection() {
+function startConnection () {
   connect(() => {
-    window.setTimeout(startConnection, connectDelay);
-    connectDelay += 2000;
-  });
+    window.setTimeout(startConnection, connectDelay)
+    connectDelay += 2000
+  })
 }
 
-function updateVolume(event) {
-  send(setVolume(event.target.value));
+function updateVolume (event) {
+  send(setVolume(event.target.value))
 }
 
-currentChannelButton.addEventListener("click", disconnectChannel);
-playYoutubeButton.addEventListener("click", promptPlayUrl);
-volumeInput.addEventListener("change", updateVolume);
+currentChannelButton.addEventListener('click', disconnectChannel)
+playYoutubeButton.addEventListener('click', promptPlayUrl)
+volumeInput.addEventListener('change', updateVolume)
 
 if (module.hot) {
   module.hot.dispose(() => {
-    currentChannelButton.removeEventListener("click", disconnectChannel);
-    playYoutubeButton.removeEventListener("click", promptPlayUrl);
-    volumeInput.removeEventListener("change", updateVolume);
-  });
+    currentChannelButton.removeEventListener('click', disconnectChannel)
+    playYoutubeButton.removeEventListener('click', promptPlayUrl)
+    volumeInput.removeEventListener('change', updateVolume)
+  })
 }
 
-startConnection();
+startConnection()
