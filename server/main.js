@@ -23,7 +23,7 @@ let state = {
   online: false,
   playing: false,
   sounds: [],
-  volume: 0.5
+  volume: 0.25
 }
 
 process.on('SIGINT', () => {
