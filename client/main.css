@@ -87,6 +87,10 @@ button.-danger:hover:not(:disabled) {
   background-color: var(--red);
 }
 
+button.-sound {
+  width: 22%;
+}
+
 button.-sound.-paused {
   background-color: var(--yellow);
   color: var(--black);
@@ -140,6 +144,17 @@ button:hover:not(:disabled) > span.action {
   opacity: 1;
 }
 
+header {
+  background-color: var(--black);
+  border-bottom: 1px solid var(--gray);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding-bottom: var(--large);
+  position: sticky;
+  top: 0px;
+}
+
 label {
   color: var(--gray);
   cursor: inherit;
@@ -185,6 +200,7 @@ p:last-child {
 #Player {
   display: flex;
   flex-direction: column;
+  padding-bottom: var(--large);
 }
 
 #PlayYoutube {
@@ -193,5 +209,5 @@ p:last-child {
 
 #Volume {
   cursor: pointer;
-  margin: var(--medium) var(--medium) 0px;
+  margin: var(--small) var(--medium) 0px;
 }
