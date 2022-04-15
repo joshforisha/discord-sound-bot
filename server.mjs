@@ -76,6 +76,10 @@ discordClient.on('ready', () => {
         player = createAudioPlayer()
         const subscription = connection.subscribe(player)
 
+        player.on('error', error => {
+          console.error(error)
+        })
+
         sounds = readdirSync('sounds')
           .filter((filename) => !filename.startsWith('.'))
           .reduce((xs, filename) => {
@@ -87,7 +91,7 @@ discordClient.on('ready', () => {
 
         disconnect = () => {
           console.log('Disconnecting from voice channel')
-          discordClient.user.setActivity(null)
+          // discordClient.user.setActivity(null)
           subscription.unsubscribe()
           connection.destroy()
           state.currentChannel = null
@@ -112,20 +116,16 @@ discordClient.on('ready', () => {
       const stream = createReadStream(`./sounds/${sounds[soundName]}`)
       resource = createAudioResource(stream, opusOptions)
 
-      player.on('error', error => {
-        console.error(error)
-      })
-
-      player.on(AudioPlayerStatus.Idle, () => {
+      player.once(AudioPlayerStatus.Idle, () => {
         playSound(soundName)
       })
 
       if (update) {
-        player.on(AudioPlayerStatus.Playing, () => {
+        player.once(AudioPlayerStatus.Playing, () => {
           state.currentMedia = soundName
           state.playing = true
           send(state)
-          discordClient.user.setActivity(state.currentMedia, { type: 'LISTENING' })
+          // discordClient.user.setActivity(state.currentMedia, { type: 'LISTENING' })
         })
       }
 

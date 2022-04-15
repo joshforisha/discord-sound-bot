@@ -14,7 +14,7 @@ function createWindow () {
     },
     width: 800
   })
-  window.webContents.openDevTools()
+  // window.webContents.openDevTools()
 
   const startUrl = url.format({
     pathname: path.join(__dirname, './dist/index.html'),
