@@ -1,6 +1,4 @@
-.cache/
+.gitconfig
 .env
-build/
-dist/
 node_modules/
 sounds/*

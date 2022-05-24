@@ -15,7 +15,7 @@ import {
 dotenv.config()
 
 const noop = () => {}
-const port = 5000
+const port = 5005
 
 const opusOptions = {
   inlineVolume: true,

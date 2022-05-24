@@ -5,7 +5,7 @@ import {
   playUrl,
   setVolume,
   togglePlay
-} from './actions'
+} from './actions.js'
 
 const Page = {
   ChannelSelect: 'CHANNEL_SELECT',
@@ -29,7 +29,7 @@ const noop = () => {}
 let send = noop
 
 function connect (fail) {
-  const socket = new window.WebSocket('ws://localhost:5000')
+  const socket = new window.WebSocket('ws://localhost:5005')
 
   send = function (object) {
     socket.send(JSON.stringify(object))
@@ -201,13 +201,5 @@ function updateVolume (event) {
 currentChannelButton.addEventListener('click', disconnectChannel)
 playYoutubeButton.addEventListener('click', promptPlayUrl)
 volumeInput.addEventListener('change', updateVolume)
-
-if (module.hot) {
-  module.hot.dispose(() => {
-    currentChannelButton.removeEventListener('click', disconnectChannel)
-    playYoutubeButton.removeEventListener('click', promptPlayUrl)
-    volumeInput.removeEventListener('change', updateVolume)
-  })
-}
 
 startConnection()
