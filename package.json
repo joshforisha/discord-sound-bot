@@ -5,22 +5,26 @@
   "scripts": {
     "app": "electron main.js",
     "dev:server": "nodemon server.mjs",
-    "serve": "node server.mjs",
+    "serve": "node --env-file=.env server.mjs",
     "start": "concurrently 'npm:serve' 'npm:app'",
     "test": "npm run lint"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "none"
+  },
   "devDependencies": {
-    "@discordjs/voice": "0.9.0",
-    "dotenv": "16.0.1",
-    "nodemon": "2.0.16"
+    "nodemon": "2.0.22"
   },
   "dependencies": {
-    "@discordjs/opus": "0.7.0",
+    "@discordjs/opus": "0.10.0",
+    "@discordjs/voice": "0.9.0",
     "bufferutil": "4.0.6",
     "concurrently": "7.2.1",
     "discord.js": "13.7.0",
-    "electron": "19.0.0",
+    "electron": "34.1.1",
     "sodium": "3.0.2",
-    "ws": "8.6.0"
+    "ws": "8.18.0"
   }
 }

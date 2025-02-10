@@ -1,0 +1,235 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Nord colors */
+  --black: #2e3440;
+  --blue-dark: #5e81ac;
+  --blue-light: #81a1c1;
+  --cyan: #88c0d0;
+  --gray-dark: #434c5e;
+  --gray-darker: #3b4252;
+  --gray-light: #d8dee9;
+  --gray-lighter: #e5e9f0;
+  --gray: #4c566a;
+  --green: #a3be8c;
+  --mint: #8fbcbb;
+  --orange: #d08770;
+  --purple: #b48ead;
+  --red: #bf616a;
+  --white: #eceff4;
+  --yellow: #ebcb8b;
+
+  /* Sizes */
+  --huge: 32px;
+  --large: 24px;
+  --medium: 16px;
+  --small: 8px;
+  --tiny: 4px;
+  --thin: 2px;
+}
+
+a {
+  color: var(--white);
+  cursor: pointer;
+  transition: color 100ms ease-out;
+
+  &:hover {
+    color: var(--red);
+    text-decoration: line-through;
+  }
+}
+
+body {
+  background-color: var(--black);
+  color: var(--white);
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 32px;
+  margin: 0px;
+}
+
+button {
+  align-items: center;
+  background-color: var(--gray-darker);
+  border-width: 0px;
+  border-radius: var(--small);
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  font-size: 12px;
+  font-weight: 700;
+  height: 56px;
+  justify-content: center;
+  outline: none;
+  padding: var(--small) var(--medium);
+  text-transform: uppercase;
+  transition: background-color 100ms ease-out;
+  vertical-align: top;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--gray-dark);
+  }
+
+  &.-blank {
+    background-color: transparent;
+  }
+
+  &.-danger:hover:not(:disabled) {
+    background-color: var(--red);
+  }
+
+  &.-sound {
+    flex-basis: 25%;
+    white-space: nowrap;
+
+    &[data-status="paused"] {
+      background-color: var(--yellow);
+      color: var(--black);
+    }
+
+    &[data-status="playing"] {
+      background-color: var(--green);
+      color: var(--black);
+    }
+  }
+
+  &.-success > span.action {
+    color: var(--black);
+  }
+
+  &.-success:hover:not(:disabled) {
+    background-color: var(--green);
+  }
+
+  &.-warning > span.action {
+    color: var(--black);
+  }
+
+  &.-warning:hover {
+    background-color: var(--yellow);
+  }
+
+  & > img {
+    border-radius: var(--small);
+    max-height: 40px;
+
+    & + span:not(.action) {
+      margin-left: var(--small);
+    }
+  }
+
+  & > * {
+    transition: opacity 100ms ease-out;
+  }
+
+  &:hover:not(:disabled):not(.-sound) > * {
+    opacity: 0.1;
+  }
+
+  & > span.action {
+    font-size: 1rem;
+    opacity: 0;
+    position: absolute;
+  }
+
+  &:hover:not(:disabled) > span.action {
+    opacity: 1;
+  }
+}
+
+header {
+  background-color: var(--black);
+  border-bottom: 1px solid var(--gray);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding-bottom: var(--medium);
+  position: sticky;
+  top: 0;
+}
+
+input[type="range"] {
+  appearance: none;
+
+  &::-webkit-slider-container {
+    background-color: var(--black);
+    height: var(--large);
+  }
+
+  &::-webkit-slider-runnable-track {
+    background-color: var(--gray-dark);
+    border-radius: var(--thin);
+    height: var(--small);
+  }
+
+  &::-webkit-slider-thumb {
+    appearance: none;
+    background-color: var(--gray-light);
+    border-radius: 50%;
+    cursor: pointer;
+    height: var(--large);
+    margin-top: calc(0px - var(--small));
+    width: var(--large);
+
+    &:hover {
+      background-color: var(--white);
+    }
+  }
+}
+
+label {
+  color: var(--gray);
+  cursor: inherit;
+}
+
+p {
+  margin: 0px;
+
+  &:first-child {
+    margin-top: var(--medium);
+  }
+
+  &:last-child {
+    margin-bottom: var(--medium);
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#ChannelSelect {
+  display: flex;
+  flex-direction: column;
+  gap: var(--small);
+  padding: var(--small);
+}
+
+#CurrentChannel {
+  margin: var(--medium);
+}
+
+#Library {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--medium);
+  justify-content: center;
+  padding: var(--medium);
+}
+
+#Player {
+  display: flex;
+  flex-direction: column;
+}
+
+#Volume {
+  margin: 0 var(--medium);
+}

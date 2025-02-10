@@ -1,20 +1,20 @@
-const path = require('path')
-const url = require('url')
+const path = require('node:path')
+const url = require('node:url')
 const { BrowserWindow, app } = require('electron')
 
 let window = null
 
-function createWindow () {
+function createWindow() {
   window = new BrowserWindow({
-    height: 800,
+    height: 600,
     webPreferences: {
       contextIsolation: false
       // enableRemoteModule: true,
       // nodeIntegration: true
     },
-    width: 800
+    width: 900
   })
-  // window.webContents.openDevTools()
+  window.webContents.openDevTools()
 
   const startUrl = url.format({
     pathname: path.join(__dirname, './client/index.html'),

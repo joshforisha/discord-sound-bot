@@ -28,14 +28,14 @@ let page = null
 const noop = () => {}
 let send = noop
 
-function connect (fail) {
+function connect(fail) {
   const socket = new window.WebSocket('ws://localhost:5005')
 
   send = function (object) {
     socket.send(JSON.stringify(object))
   }
 
-  function viewChannelSelect (state) {
+  function viewChannelSelect(state) {
     if (page !== Page.ChannelSelect) {
       hide(playerDiv)
       show(channelSelectDiv)
@@ -72,11 +72,11 @@ function connect (fail) {
     })
   }
 
-  function viewPlayer (state) {
+  function viewPlayer(state) {
     if (page !== Page.Player) {
-      Array.from(
-        librarySection.querySelectorAll('button.-sound')
-      ).forEach((button) => librarySection.removeChild(button))
+      Array.from(librarySection.querySelectorAll('button.-sound')).forEach(
+        (button) => librarySection.removeChild(button)
+      )
 
       state.sounds.forEach((name) => {
         const button = document.createElement('button')
@@ -88,10 +88,8 @@ function connect (fail) {
         button.appendChild(nameSpan)
 
         button.addEventListener('click', () => {
-          if (
-            button.classList.contains('-paused') ||
-            button.classList.contains('-playing')
-          ) {
+          const status = button.getAttribute('data-status')
+          if (status === 'paused' || status === 'playing') {
             send(togglePlay())
           } else {
             send(playSound(name))
@@ -113,17 +111,9 @@ function connect (fail) {
       Array.from(librarySection.querySelectorAll('button')).forEach(
         (button) => {
           if (button.getAttribute('data-name') === state.currentMedia) {
-            if (state.playing) {
-              button.classList.remove('-paused')
-              button.classList.add('-playing')
-            } else {
-              button.classList.remove('-playing')
-              button.classList.add('-paused')
-            }
-          } else {
-            button.classList.remove('-paused')
-            button.classList.remove('-playing')
-          }
+            if (state.playing) button.setAttribute('data-status', 'playing')
+            else button.setAttribute('data-status', 'paused')
+          } else button.removeAttribute('data-status')
         }
       )
     }
@@ -165,36 +155,36 @@ function connect (fail) {
   })
 }
 
-function disconnectChannel () {
+function disconnectChannel() {
   page = null
   hide(channelSelectDiv)
   hide(playerDiv)
   send(disconnect())
 }
 
-function hide (element) {
-  element.classList.add('-hidden')
+function hide(element) {
+  element.setAttribute('hidden', '')
 }
 
-function promptPlayUrl () {
+function promptPlayUrl() {
   const url = window.prompt('Enter URL')
   if (url) {
     send(playUrl(url))
   }
 }
 
-function show (element) {
-  element.classList.remove('-hidden')
+function show(element) {
+  element.removeAttribute('hidden')
 }
 
-function startConnection () {
+function startConnection() {
   connect(() => {
     window.setTimeout(startConnection, connectDelay)
     connectDelay += 2000
   })
 }
 
-function updateVolume (event) {
+function updateVolume(event) {
   send(setVolume(event.target.value))
 }
 

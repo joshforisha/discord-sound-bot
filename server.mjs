@@ -1,8 +1,7 @@
 import Discord from 'discord.js'
-import dotenv from 'dotenv'
-import path from 'path'
+import path from 'node:path'
 import { WebSocketServer } from 'ws'
-import { createReadStream, readdirSync } from 'fs'
+import { createReadStream, readdirSync } from 'node:fs'
 import {
   AudioPlayerStatus,
   StreamType,
@@ -11,8 +10,6 @@ import {
   createAudioResource,
   joinVoiceChannel
 } from '@discordjs/voice'
-
-dotenv.config()
 
 const noop = () => {}
 const port = 5005
@@ -43,7 +40,7 @@ let state = {
   online: false,
   playing: false,
   sounds: [],
-  volume: 0.25
+  volume: 0.125
 }
 
 process.on('SIGINT', () => {
@@ -58,9 +55,10 @@ discordClient.on('ready', () => {
   const wss = new WebSocketServer({ port })
 
   wss.on('connection', (ws) => {
-    function connectToVoiceChannel (channelId) {
-      const channel = discordClient.channels.cache
-        .find(c => c.id === channelId)
+    function connectToVoiceChannel(channelId) {
+      const channel = discordClient.channels.cache.find(
+        (c) => c.id === channelId
+      )
 
       connection = joinVoiceChannel({
         adapterCreator: channel.guild.voiceAdapterCreator,
@@ -68,7 +66,7 @@ discordClient.on('ready', () => {
         guildId: channel.guildId
       })
 
-      connection.on('error', error => {
+      connection.on('error', (error) => {
         sendError(error)
       })
 
@@ -76,7 +74,7 @@ discordClient.on('ready', () => {
         player = createAudioPlayer()
         const subscription = connection.subscribe(player)
 
-        player.on('error', error => {
+        player.on('error', (error) => {
           console.error(error)
         })
 
@@ -112,7 +110,7 @@ discordClient.on('ready', () => {
       })
     }
 
-    function playSound (soundName, update = false) {
+    function playSound(soundName, update = false) {
       const stream = createReadStream(`./sounds/${sounds[soundName]}`)
       resource = createAudioResource(stream, opusOptions)
 
@@ -133,7 +131,7 @@ discordClient.on('ready', () => {
       player.play(resource)
     }
 
-    function togglePlay () {
+    function togglePlay() {
       if (state.playing) {
         player.pause()
         state.playing = false
@@ -148,7 +146,7 @@ discordClient.on('ready', () => {
       ws.send(JSON.stringify(object))
     }
 
-    function sendError (error) {
+    function sendError(error) {
       console.error(error)
       send({ error })
     }
@@ -204,7 +202,7 @@ discordClient.on('ready', () => {
       .sort((a, b) => (a.name < b.name ? -1 : 1))
   }
 
-  console.log(`Listening on :${port}`)
+  console.log(`Listening on port ${port}`)
 })
 
 discordClient.login(process.env.BOT_TOKEN)
