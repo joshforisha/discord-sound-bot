@@ -206,11 +206,16 @@ p {
   display: none !important;
 }
 
-#ChannelSelect {
+[data-page="channels"] {
   display: flex;
   flex-direction: column;
   gap: var(--small);
   padding: var(--small);
+}
+
+[data-page="player"] {
+  display: flex;
+  flex-direction: column;
 }
 
 #CurrentChannel {
@@ -223,11 +228,6 @@ p {
   gap: var(--medium);
   justify-content: center;
   padding: var(--medium);
-}
-
-#Player {
-  display: flex;
-  flex-direction: column;
 }
 
 #Volume {

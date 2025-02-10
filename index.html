@@ -18,11 +18,11 @@
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="" />
     -->
     <link rel="stylesheet" href="styles.css" />
-    <script src="main.js" type="module"></script>
+    <script src="renderer.js" type="module"></script>
   </head>
   <body>
-    <div class="page" hidden id="ChannelSelect"></div>
-    <div class="page" hidden id="Player">
+    <div data-page="channels" hidden></div>
+    <div data-page="player" hidden>
       <header>
         <button class="-blank -danger" id="CurrentChannel">
           <img class="icon" />
@@ -31,12 +31,7 @@
         </button>
         <input id="Volume" max="0.2" min="0" step="0.005" type="range" />
       </header>
-      <section id="Library">
-        <button hidden id="PlayYoutube">
-          <img alt="Youtube icon" class="icon" src="./icons/youtube.png" />
-          <span class="action">Enter URL</span>
-        </button>
-      </section>
+      <section id="Library"></section>
     </div>
   </body>
 </html>

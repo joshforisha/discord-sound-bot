@@ -8,16 +8,16 @@ function createWindow() {
   window = new BrowserWindow({
     height: 600,
     webPreferences: {
-      contextIsolation: false
-      // enableRemoteModule: true,
-      // nodeIntegration: true
+      contextIsolation: true,
+      nodeIntegration: true,
+      preload: path.join(__dirname, './preload.js')
     },
     width: 900
   })
   window.webContents.openDevTools()
 
   const startUrl = url.format({
-    pathname: path.join(__dirname, './client/index.html'),
+    pathname: path.join(__dirname, './index.html'),
     protocol: 'file:',
     slashes: true
   })
