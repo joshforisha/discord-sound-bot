@@ -24,11 +24,14 @@
     <div data-page="channels" hidden></div>
     <div data-page="player" hidden>
       <header>
-        <button class="-blank -danger" id="CurrentChannel">
-          <img class="icon" />
-          <span class="name"></span>
-          <span class="action">&lang; Disconnect</span>
-        </button>
+        <div>
+          <button class="danger" id="CurrentChannel">
+            <img class="icon" />
+            <span class="name"></span>
+            <span class="action">&lang; Disconnect</span>
+          </button>
+          <button id="ChangeSource">Source&hellip;</button>
+        </div>
         <input id="Volume" max="0.2" min="0" step="0.005" type="range" />
       </header>
       <section id="Library"></section>

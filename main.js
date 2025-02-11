@@ -1,5 +1,5 @@
 const url = require('node:url')
-const { BrowserWindow, app, ipcMain } = require('electron')
+const { BrowserWindow, Menu, app, dialog, ipcMain } = require('electron')
 const { ChannelType, Client, GatewayIntentBits } = require('discord.js')
 const { basename, extname, join, resolve } = require('node:path')
 const { contextBridge } = require('electron/renderer')
@@ -40,6 +40,7 @@ let channelConnection
 let player
 let disconnect = noop
 let resource
+let sourcePath = resolve('./sounds')
 let volume = 0.125
 let window = null
 
@@ -50,9 +51,9 @@ function createWindow() {
       contextIsolation: true,
       preload: join(__dirname, './preload.js')
     },
-    width: 900
+    width: 1200
   })
-  // window.webContents.openDevTools()
+  window.webContents.openDevTools()
 
   window.loadURL(
     url.format({
@@ -67,6 +68,16 @@ function createWindow() {
   })
 }
 
+function getSounds() {
+  return readdirSync(sourcePath)
+    .filter((filename) => !filename.startsWith('.'))
+    .reduce((xs, filename) => {
+      const name = basename(filename, extname(filename))
+      xs[name] = filename
+      return xs
+    }, {})
+}
+
 app.on('activate', () => {
   if (window === null) {
     createWindow()
@@ -74,6 +85,21 @@ app.on('activate', () => {
 })
 
 app.on('ready', () => {
+  ipcMain.handle('changeSource', async () => {
+    return new Promise(async (resolve, reject) => {
+      const selection = await dialog.showOpenDialog({
+        properties: ['openDirectory']
+      })
+      if (selection === undefined) return reject('Undefined directory')
+      if (selection.canceled === true) return reject('Canceled')
+      if (selection.filePaths?.length !== 1)
+        return reject('Weird directory selection')
+
+      sourcePath = selection.filePaths.at(0)
+      resolve(getSounds())
+    })
+  })
+
   ipcMain.handle('connectToChannel', async (_, channelId) => {
     await connectedToDiscord
     const channel = discordClient.channels.cache.find((c) => c.id === channelId)
@@ -98,14 +124,6 @@ app.on('ready', () => {
           console.warn(error)
         })
 
-        const sounds = readdirSync('sounds')
-          .filter((filename) => !filename.startsWith('.'))
-          .reduce((xs, filename) => {
-            const name = basename(filename, extname(filename))
-            xs[name] = filename
-            return xs
-          }, {})
-
         disconnect = () => {
           // discordClient.user.setActivity(null)
           subscription.unsubscribe()
@@ -119,7 +137,7 @@ app.on('ready', () => {
             id: channel.id,
             name: `${channel.guild.name} – ${channel.name}`
           },
-          sounds,
+          sounds: getSounds(),
           volume
         })
       })
@@ -145,7 +163,7 @@ app.on('ready', () => {
 
   ipcMain.handle('playSound', async (_, soundFile, update = false) => {
     await connectedToDiscord
-    const stream = createReadStream(`./sounds/${soundFile}`)
+    const stream = createReadStream(`${sourcePath}/${soundFile}`)
     resource = createAudioResource(stream, opusOptions)
 
     player.once(AudioPlayerStatus.Idle, () => {
