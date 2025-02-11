@@ -42,7 +42,7 @@ const opusOptions = {
 
 const store = new Store()
 if (!store.get('sourcePath')) {
-  store.set('sourcePath', path.resolve('./sounds'))
+  store.set('sourcePath', path.resolve('./'))
 }
 
 let channelConnection
@@ -59,9 +59,9 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, './preload.js')
     },
-    width: 1200
+    width: 900
   })
-  window.webContents.openDevTools()
+  // window.webContents.openDevTools()
 
   window.loadURL(
     url.format({
