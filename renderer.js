@@ -23,14 +23,16 @@ async function connectToChannel(channelId) {
     nameSpan.textContent = name
     button.appendChild(nameSpan)
 
-    button.addEventListener('click', () => {
-      const status = button.getAttribute('data-status')
-      if (status === 'paused' || status === 'playing') discord.togglePlay()
+    button.addEventListener('click', async () => {
+      let status = button.getAttribute('data-status')
+      if (status) status = await discord.togglePlay()
       else {
         const activeButton = document.querySelector('button[data-status]')
         if (activeButton) activeButton.removeAttribute('data-status')
         discord.playSound(file)
+        status = 'playing'
       }
+      button.setAttribute('data-status', status)
     })
 
     librarySection.appendChild(button)

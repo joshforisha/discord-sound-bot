@@ -1,3 +1,5 @@
+.DS_Store
+.env
 .gitconfig
-electron-builder.env
+dist/
 node_modules/

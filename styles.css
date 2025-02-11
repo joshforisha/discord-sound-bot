@@ -224,8 +224,8 @@ p {
 
 #Library {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--medium);
+  flex-direction: column;
+  gap: var(--small);
   justify-content: center;
   padding: var(--medium);
 }
