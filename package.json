@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "author": "Josh Forisha <josh@forisha.com>",
   "description": "Graphical environment for playing local audio files over Discord",
+  "type": "module",
   "main": "main.js",
   "private": true,
   "scripts": {
@@ -22,7 +23,8 @@
   },
   "devDependencies": {
     "electron": "34.1.1",
-    "electron-builder": "25.1.8"
+    "electron-builder": "25.1.8",
+    "electron-store": "10.0.1"
   },
   "dependencies": {
     "@discordjs/opus": "0.10.0",

@@ -1,22 +1,26 @@
-const url = require('node:url')
-const { BrowserWindow, Menu, app, dialog, ipcMain } = require('electron')
-const { ChannelType, Client, GatewayIntentBits } = require('discord.js')
-const { basename, extname, join, resolve } = require('node:path')
-const { contextBridge } = require('electron/renderer')
-const { createReadStream, readdirSync } = require('node:fs')
-const {
+import Dotenv from 'dotenv'
+import Store from 'electron-store'
+import fs from 'node:fs'
+import path from 'node:path'
+import url from 'node:url'
+import { BrowserWindow, Menu, app, dialog, ipcMain } from 'electron'
+import { ChannelType, Client, GatewayIntentBits } from 'discord.js'
+import {
   AudioPlayerStatus,
   StreamType,
   VoiceConnectionStatus,
   createAudioPlayer,
   createAudioResource,
   joinVoiceChannel
-} = require('@discordjs/voice')
+} from '@discordjs/voice'
 
-require('dotenv').config({
+const __filename = url.fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+Dotenv.config({
   path: app.isPackaged
-    ? join(process.resourcesPath, '.env')
-    : resolve(process.cwd(), '.env')
+    ? path.join(process.resourcesPath, '.env')
+    : path.resolve(process.cwd(), '.env')
 })
 
 const discordClient = new Client({
@@ -36,11 +40,15 @@ const opusOptions = {
   inputType: StreamType.OggOpus
 }
 
+const store = new Store()
+if (!store.get('sourcePath')) {
+  store.set('sourcePath', path.resolve('./sounds'))
+}
+
 let channelConnection
 let player
 let disconnect = noop
 let resource
-let sourcePath = resolve('./sounds')
 let volume = 0.125
 let window = null
 
@@ -49,7 +57,7 @@ function createWindow() {
     height: 600,
     webPreferences: {
       contextIsolation: true,
-      preload: join(__dirname, './preload.js')
+      preload: path.join(__dirname, './preload.js')
     },
     width: 1200
   })
@@ -57,7 +65,7 @@ function createWindow() {
 
   window.loadURL(
     url.format({
-      pathname: join(__dirname, './index.html'),
+      pathname: path.join(__dirname, './index.html'),
       protocol: 'file:',
       slashes: true
     })
@@ -69,10 +77,11 @@ function createWindow() {
 }
 
 function getSounds() {
-  return readdirSync(sourcePath)
+  return fs
+    .readdirSync(store.get('sourcePath'))
     .filter((filename) => !filename.startsWith('.'))
     .reduce((xs, filename) => {
-      const name = basename(filename, extname(filename))
+      const name = path.basename(filename, path.extname(filename))
       xs[name] = filename
       return xs
     }, {})
@@ -95,7 +104,7 @@ app.on('ready', () => {
       if (selection.filePaths?.length !== 1)
         return reject('Weird directory selection')
 
-      sourcePath = selection.filePaths.at(0)
+      store.set('sourcePath', selection.filePaths.at(0))
       resolve(getSounds())
     })
   })
@@ -163,7 +172,9 @@ app.on('ready', () => {
 
   ipcMain.handle('playSound', async (_, soundFile, update = false) => {
     await connectedToDiscord
-    const stream = createReadStream(`${sourcePath}/${soundFile}`)
+    const stream = fs.createReadStream(
+      `${store.get('sourcePath')}/${soundFile}`
+    )
     resource = createAudioResource(stream, opusOptions)
 
     player.once(AudioPlayerStatus.Idle, () => {
