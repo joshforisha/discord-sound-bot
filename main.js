@@ -35,6 +35,10 @@ const connectedToDiscord = new Promise((resolve) => {
 
 const noop = () => {}
 
+let fadeInterval
+const fadeStep = 500
+const fadeTime = 5_000
+
 const opusOptions = {
   inlineVolume: true,
   inputType: StreamType.OggOpus
@@ -59,9 +63,9 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, './preload.js')
     },
-    width: 900
+    width: process.env.ENV === 'development' ? 1200 : 900
   })
-  // window.webContents.openDevTools()
+  if (process.env.ENV === 'development') window.webContents.openDevTools()
 
   window.loadURL(
     url.format({
@@ -76,6 +80,50 @@ function createWindow() {
   })
 }
 
+function fadeInSound() {
+  if (fadeInterval) clearInterval(fadeInterval)
+
+  const step = fadeTime / fadeStep
+  const volumeStep = volume / step
+  let currentVolume = 0
+
+  resource.volume.setVolume(currentVolume)
+
+  fadeInterval = setInterval(() => {
+    resource.volume.setVolume((currentVolume += volumeStep))
+    console.log(currentVolume)
+  }, fadeStep)
+
+  setTimeout(() => {
+    clearInterval(fadeInterval)
+  }, fadeTime)
+
+  return new Promise((resolve) => {
+    player.play(resource)
+    resolve()
+  })
+}
+
+function fadeOutSound() {
+  if (fadeInterval) clearInterval(fadeInterval)
+
+  const step = fadeTime / fadeStep
+  const volumeStep = volume / step
+  let currentVolume = volume
+
+  fadeInterval = setInterval(() => {
+    resource.volume.setVolume((currentVolume -= volumeStep))
+    console.log(currentVolume)
+  }, fadeStep)
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      clearInterval(fadeInterval)
+      resolve()
+    }, fadeTime)
+  })
+}
+
 function getSounds() {
   return fs
     .readdirSync(store.get('sourcePath'))
@@ -85,6 +133,25 @@ function getSounds() {
       xs[name] = filename
       return xs
     }, {})
+}
+
+async function playSound(soundFile, update = false) {
+  await connectedToDiscord
+  const stream = fs.createReadStream(`${store.get('sourcePath')}/${soundFile}`)
+
+  player.once(AudioPlayerStatus.Idle, () => {
+    playSound(soundFile)
+  })
+
+  if (update && player.state.status !== AudioPlayerStatus.Paused) {
+    if (resource) await fadeOutSound()
+    resource = createAudioResource(stream, opusOptions)
+    return fadeInSound()
+  }
+
+  resource = createAudioResource(stream, opusOptions)
+  resource.volume.setVolume(volume)
+  player.play(resource)
 }
 
 app.on('activate', () => {
@@ -170,28 +237,8 @@ app.on('ready', () => {
       .sort((a, b) => (a.name < b.name ? -1 : 1))
   })
 
-  ipcMain.handle('playSound', async (_, soundFile, update = false) => {
-    await connectedToDiscord
-    const stream = fs.createReadStream(
-      `${store.get('sourcePath')}/${soundFile}`
-    )
-    resource = createAudioResource(stream, opusOptions)
-
-    player.once(AudioPlayerStatus.Idle, () => {
-      playSound(soundFile)
-    })
-
-    resource.volume.setVolume(volume)
-    player.play(resource)
-
-    if (update) {
-      return new Promise((resolve) => {
-        player.once(AudioPlayerStatus.Playing, () => {
-          // discordClient.user.setActivity(state.currentMedia, { type: 'LISTENING' })
-          resolve()
-        })
-      })
-    }
+  ipcMain.handle('playSound', (_, soundFile) => {
+    return playSound(soundFile, true)
   })
 
   ipcMain.handle('setVolume', (_, newVolume) => {
