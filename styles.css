@@ -91,6 +91,8 @@ button {
   }
 
   &.sound {
+    height: 44px;
+    justify-content: flex-start;
     white-space: nowrap;
 
     &[data-status="paused"] {
@@ -133,7 +135,7 @@ button {
     transition: opacity 100ms ease-out;
   }
 
-  &:hover:not(:disabled):not(.-sound) > * {
+  &:hover:not(:disabled):not(.sound) > * {
     opacity: 0.1;
   }
 
