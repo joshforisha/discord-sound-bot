@@ -91,7 +91,6 @@ function fadeInSound() {
 
   fadeInterval = setInterval(() => {
     resource.volume.setVolume((currentVolume += volumeStep))
-    console.log(currentVolume)
   }, fadeStep)
 
   setTimeout(() => {
@@ -113,7 +112,6 @@ function fadeOutSound() {
 
   fadeInterval = setInterval(() => {
     resource.volume.setVolume((currentVolume -= volumeStep))
-    console.log(currentVolume)
   }, fadeStep)
 
   return new Promise((resolve) => {
