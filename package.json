@@ -23,7 +23,7 @@
     "trailingComma": "none"
   },
   "devDependencies": {
-    "electron": "34.1.1",
+    "electron": "35.7.5",
     "electron-builder": "25.1.8",
     "electron-store": "10.0.1"
   },
